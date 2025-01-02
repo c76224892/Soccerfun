@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SolQuest Soccer Edition</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #000033;
+      color: #00FFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      background-image: radial-gradient(circle at center, #111144, #000033);
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .ascii-text {
+      font-size: 1.5em;
+      white-space: pre;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ascii-text img {
+      width: 30px;
+      height: 30px;
+    }
+
+    #wallet-container, #game-container, #leaderboard-container {
+      margin: 20px;
+      max-width: 600px;
+      text-align: center;
+      border: 2px solid #00FFFF;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #001144;
+      box-shadow: 0 0 10px #00FFFF;
+    }
+
+    input {
+      background-color: #002266;
+      color: #00FFFF;
+      border: 1px solid #00FFFF;
+      padding: 10px;
+      font-size: 1.2em;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #00FFFF;
+      color: #000033;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      transition: background-color 0.3s;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #00CCCC;
+    }
+
+    #sequence-display {
+      font-size: 1.5em;
+      margin: 20px 0;
+      min-height: 60px;
+    }
+
+    #quiz-answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-button {
+      background-color: #002266;
+      color: #00FFFF;
+      border: 1px solid #00FFFF;
+      padding: 15px;
+      cursor: pointer;
+      font-size: 1.2em;
+      border-radius: 4px;
+    }
+
+    .answer-button:hover {
+      background-color: #001144;
+    }
+
+    #score-display {
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+
+    #result-message {
+      font-size: 1.4em;
+      color: #FFD700;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #leaderboard {
+      text-align: left;
+      font-size: 1.2em;
+      color: #FFD700;
+    }
+
+    #leaderboard ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #leaderboard li {
+      padding: 5px;
+      font-size: 1.2em;
+      background-color: #002266;
+      margin-bottom: 5px;
+      color: #00FFFF;
+      border-radius: 4px;
+    }
+
+    #leaderboard li.you {
+      background-color: #FFD700;
+      color: #000033;
+      font-weight: bold;
+    }
+
+    #prize-container {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #prize-message {
+      font-size: 1.5em;
+      color: #00FF00;
+      margin-bottom: 10px;
+    }
+
+    #twitter-instructions {
+      font-size: 1.2em;
+      color: #FFD700;
+    }
+
+    #twitter-instructions a {
+      color: #00FFAA;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    #twitter-instructions a:hover {
+      color: #00DD88;
+    }
+  </style>
+</head>
+<body>
+  <!-- 1) Wallet Container -->
+  <div id="wallet-container">
+    <h1>SolQuest Soccer Edition</h1>
+    <div class="ascii-text" style="justify-content: center;">
+      <span>⚽</span> <span>SOLQUEST</span> <span>⚽</span>
+    </div>
+    <p>Create a username and enter your Solana wallet to start the soccer challenge.</p>
+    <p id="main-info">💡 The faster you complete the quiz, the more SOL you win! Your prize is calculated as <strong>(1 SOL ÷ seconds taken) × 3</strong>. 🚀</p>
+    <input type="text" id="username" placeholder="Create your username"/>
+    <input type="text" id="wallet" placeholder="Enter your Solana wallet address"/>
+    <button onclick="submitWallet()">Start</button>
+  </div>
+
+  <!-- 2) Game Container (Hidden by Default) -->
+  <div id="game-container" style="display: none;">
+    <h1>Soccer Quiz</h1>
+    <p id="score-display">Correct Answers: 0 / 3</p>
+    <div id="sequence-display">Loading question...</div>
+    <div id="quiz-answers"></div>
+  </div>
+
+  <!-- 3) Result Message and Leaderboard (Hidden by default) -->
+  <div id="leaderboard-container" style="display: none;">
+    <h1>Leaderboard</h1>
+    <div id="leaderboard">
+      <ul id="leaderboard-list"></ul>
+    </div>
+    <button id="prize-button" onclick="revealPrize()">Unlock your prize</button>
+  </div>
+
+  <!-- 4) Prize Container -->
+  <div id="prize-container">
+    <p id="prize-message"></p>
+    <p id="twitter-instructions">Claim your <strong id="prize-value"></strong> SOL reward by tagging us on our X account: <a href="https://x.com/SoccerFunSol" target="_blank">@SoccerFunSol</a> with your wallet address!</p>
+  </div>
+
+  <script>
+    const footballQuestions = [
+      {
+        question: "Who won the FIFA World Cup in 2018?",
+        answers: ["Germany", "Brazil", "France", "Argentina"],
+        correct: 2
+      },
+      {
+        question: "Which player has the most Ballon d'Or awards?",
+        answers: ["Lionel Messi", "Cristiano Ronaldo", "Johan Cruyff", "Zinedine Zidane"],
+        correct: 0
+      },
+      {
+        question: "Which club has the most UEFA Champions League titles?",
+        answers: ["AC Milan", "Liverpool", "Real Madrid", "Bayern Munich"],
+        correct: 2
+      },
+      {
+        question: "Which country hosted the 2014 FIFA World Cup?",
+        answers: ["South Africa", "Brazil", "Germany", "Russia"],
+        correct: 1
+      },
+      {
+        question: "Who is known as 'The King of Football'?",
+        answers: ["Diego Maradona", "Pelé", "Zinedine Zidane", "Ronaldo Nazário"],
+        correct: 1
+      }
+    ];
+
+    const randomNames = [
+      'CryptoKing', 'BlockBuster', 'EtherManiac', 'TokenTiger', 'ChainChaser', 'WalletWizard',
+      'SolanaFan', 'NFTNinja', 'LedgerLion', 'DeFiDynamo'
+    ];
+
+    let correctCount = 0;
+    let askedQuestions = new Set();
+    let startTime;
+
+    function submitWallet() {
+      const username = document.getElementById('username').value.trim();
+      const wallet = document.getElementById('wallet').value.trim();
+
+      if (!username) {
+        alert('Please create a username to proceed.');
+        return;
+      }
+
+      if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(wallet)) {
+        document.getElementById('wallet-container').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        correctCount = 0;
+        askedQuestions.clear();
+        updateScoreDisplay();
+        startTime = Date.now();
+        loadQuestion();
+      } else {
+        alert('Invalid Solana wallet address. Please try again.');
+      }
+    }
+
+    function loadQuestion() {
+      if (correctCount >= 3) {
+        showLeaderboard();
+        return;
+      }
+
+      const availableQuestions = footballQuestions.filter((_, index) => !askedQuestions.has(index));
+      if (availableQuestions.length === 0) {
+        askedQuestions.clear();
+      }
+
+      const questionObj = availableQuestions[Math.floor(Math.random() * footballQuestions.length)];
+      displayQuestion(questionObj);
+    }
+
+    function displayQuestion(questionObj) {
+      const sequenceDisplay = document.getElementById('sequence-display');
+      const quizAnswersDiv = document.getElementById('quiz-answers');
+
+      sequenceDisplay.textContent = questionObj.question;
+      quizAnswersDiv.innerHTML = '';
+
+      questionObj.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-button';
+        btn.textContent = answer;
+        btn.onclick = () => checkAnswer(index, questionObj.correct, btn);
+        quizAnswersDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selectedIndex, correctIndex, button) {
+      if (selectedIndex === correctIndex) {
+        correctCount++;
+        button.classList.add('correct-animation');
+        setTimeout(() => {
+          button.classList.remove('correct-animation');
+          updateScoreDisplay();
+          loadQuestion();
+        }, 500);
+      } else {
+        loadQuestion();
+      }
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById('score-display').textContent = `Correct Answers: ${correctCount} / 3`;
+    }
+
+    function showLeaderboard() {
+      document.getElementById('game-container').style.display = 'none';
+      document.getElementById('leaderboard-container').style.display = 'block';
+
+      const leaderboardList = document.getElementById('leaderboard-list');
+      leaderboardList.innerHTML = '';
+
+      const leaderboardData = randomNames.map(name => ({
+        name,
+        time: `${Math.floor(Math.random() * 120)}s`
+      }));
+
+      const endTime = Date.now();
+      const timeTaken = Math.round((endTime - startTime) / 1000); // in seconds
+      leaderboardData.push({ name: 'You', time: `${timeTaken}s` });
+      leaderboardData.sort((a, b) => parseInt(a.time) - parseInt(b.time));
+
+      leaderboardData.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `${entry.name}: ${entry.time}`;
+        if (entry.name === 'You') {
+          li.classList.add('you');
+        }
+        leaderboardList.appendChild(li);
+      });
+    }
+
+    function revealPrize() {
+      const endTime = Date.now();
+      const timeTaken = Math.round((endTime - startTime) / 1000); // in seconds
+      const prize = (1 / timeTaken * 3).toFixed(4); // Prize calculation
+
+      document.getElementById('leaderboard-container').style.display = 'none';
+      document.getElementById('prize-container').style.display = 'block';
+      document.getElementById('prize-message').textContent = `🎉 Congratulations! Your prize is ${prize} SOL!`;
+      document.getElementById('prize-value').textContent = prize;
+    }
+  </script>
+</body>
+</html>

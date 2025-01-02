@@ -2,125 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SoccerFun</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SolQuest</title>
   <style>
     body {
-      font-family: 'Courier New', monospace;
-      background-color: #000033;
-      color: #00FFFF;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+    }
+
+    .container {
       text-align: center;
-      background-image: radial-gradient(circle at center, #111144, #000033);
+      max-width: 800px;
+      margin: auto;
     }
 
     h1 {
-      font-size: 2.5em;
+      font-size: 3.5rem;
       margin-bottom: 20px;
+      color: #00FF00;
     }
 
-    .ascii-text {
-      font-size: 1.5em;
-      white-space: pre;
-      line-height: 1.5;
-      margin-bottom: 20px;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #ccc;
     }
 
-    .ascii-text img {
-      width: 30px;
-      height: 30px;
+    .button-container {
+      margin-top: 30px;
     }
 
-    #wallet-container {
-      margin: 20px;
-      max-width: 600px;
-      text-align: center;
-      border: 2px solid #00FFFF;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: #001144;
-      box-shadow: 0 0 10px #00FFFF;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    input {
-      background-color: #002266;
-      color: #00FFFF;
-      border: 1px solid #00FFFF;
-      padding: 10px;
-      font-size: 1.2em;
-      width: calc(100% - 40px);
-      margin-bottom: 10px;
-      border-radius: 4px;
-      text-align: center;
-    }
-
-    button {
-      background-color: #00FFFF;
-      color: #000033;
-      padding: 10px 20px;
-      font-size: 1.2em;
+    .cta-button {
+      background-color: #00FF00;
+      color: #000;
+      font-size: 1.5rem;
+      padding: 15px 30px;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
-      width: calc(100% - 40px);
       transition: background-color 0.3s;
-      border-radius: 4px;
     }
 
-    button:hover {
-      background-color: #00CCCC;
+    .cta-button:hover {
+      background-color: #00CC00;
     }
 
-    #main-info {
-      margin-top: 10px;
-      margin-bottom: 20px;
+    footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
       text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    footer a {
+      color: #00FF00;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: #00CC00;
     }
   </style>
 </head>
 <body>
-  <!-- 1) Wallet Container -->
-  <div id="wallet-container">
-    <h1>SoccerFun</h1>
-    <div class="ascii-text" style="justify-content: center;">
-      <span>⚽</span> <span>SOCCERFUN</span> <span>⚽</span>
+  <div class="container">
+    <h1>SolQuest</h1>
+    <p>Answer questions and win <strong>0.1 SOL</strong> every 10 minutes. Are you ready to join the quest?</p>
+    <div class="button-container">
+      <button class="cta-button" onclick="startChallenge()">Start Now</button>
     </div>
-    <p>Create a username and enter your Solana wallet to start the soccer challenge.</p>
-    <p id="main-info">💡 The faster you complete the quiz, the more SOL you win! Your prize is calculated as <strong>(1 SOL ÷ seconds taken) × 3</strong>. 🚀</p>
-    <input type="text" id="username" placeholder="Create your username"/>
-    <input type="text" id="wallet" placeholder="Enter your Solana wallet address"/>
-    <button onclick="submitWallet()">Start</button>
   </div>
+  <footer>
+    <p>Follow us on <a href="https://x.com/wayfinderaiSol" target="_blank">Twitter</a></p>
+  </footer>
 
   <script>
-    function submitWallet() {
-      const username = document.getElementById('username').value.trim();
-      const wallet = document.getElementById('wallet').value.trim();
-
-      if (!username) {
-        alert('Please create a username to proceed.');
-        return;
-      }
-
-      if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(wallet)) {
-        alert('Successfully entered! The game will begin soon.');
-      } else {
-        alert('Invalid Solana wallet address. Please try again.');
-      }
+    function startChallenge() {
+      // Replace this with your challenge page URL
+      window.location.href = "https://www.solquest.fun/start";
     }
   </script>
 </body>
